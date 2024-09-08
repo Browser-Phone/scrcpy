@@ -5,8 +5,11 @@
       url = "github:numtide/flake-utils";
     };
     gradle2nix = {
-      url = "github:tnichols217/gradle2nix/v2";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:tadfisher/gradle2nix/v2";
+    };
+    scrcpy = {
+      url = "github:Genymobile/scrcpy";
+      flake = false;
     };
   };
 
@@ -18,60 +21,48 @@
       };
       pkgs = import inputs.nixpkgs {inherit system config;};
 
-      buildToolsVersion = "34.0.0";
-      ndkVersion = "25.1.8937393";
+      platformVersions = "34";
+      buildToolsVersion = "${platformVersions}.0.0";
+      platformToolsVersion = "${platformVersions}.0.4";
 
       androidPackages = pkgs.androidenv.composeAndroidPackages {
+        inherit platformToolsVersion;
+        toolsVersion = null;
         cmdLineToolsVersion = "8.0";
-        toolsVersion = "26.1.1";
-        platformToolsVersion = "34.0.4";
         buildToolsVersions = [buildToolsVersion];
-        includeEmulator = false;
-        emulatorVersion = "30.3.4";
-        platformVersions = ["34"];
-        includeSources = false;
-        includeSystemImages = false;
-        systemImageTypes = ["google_apis_playstore"];
-        abiVersions = ["armeabi-v7a" "arm64-v8a"];
-        cmakeVersions = ["3.10.2" "3.22.1"];
-        includeNDK = false;
-        ndkVersions = [ndkVersion];
-        useGoogleAPIs = false;
-        useGoogleTVAddOns = false;
-        includeExtras = ["extras;google;gcm"];
+        platformVersions = [platformVersions];
       };
+      extraGradleFlags = [ "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${buildToolsVersion}/aapt2" ];
+      overrideGradleFlags = drv: drv.overrideAttrs (final: prev: (prev // {
+        final.gradleFlags = (pkgs.lib.lists.drop 1 prev.gradleFlags) ++ extraGradleFlags;
+      }));
+      buildGradlePackage = args: overrideGradleFlags (inputs.gradle2nix.builders.${system}.buildGradlePackage args);
       androidSdk = androidPackages.androidsdk;
-      extraGradleFlags = [ "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/34.0.0/aapt2" ];
     in {
       packages = rec {
-        scrcpy = inputs.gradle2nix.builders.${system}.buildGradlePackage {
-          inherit extraGradleFlags;
-          pname = "scrcpy";
-          version = "1.0";
-          src = ./.; # fetch from github
-          lockFile = ./gradle.lock;
-          ANDROID_SDK_ROOT="${androidSdk}/libexec/android-sdk";
-          nativeBuildInputs = [
-            androidSdk
-          ];
-          installPhase = ''mkdir -p $out; cp -r server/build/outputs/apk/*/*.apk $out'';
+        scrcpy = pkgs.callPackage ./nix/scrcpy.nix {
+          inherit pkgs buildGradlePackage androidSdk;
+          scrcpy = inputs.scrcpy;
         };
+        thing = inputs.gradle2nix.packages.${system}.gradle2nix;
+        thing2 = inputs.gradle2nix2.packages.${system}.gradle2nix;
         default = scrcpy;
       };
       devShells = rec {
-        gradle = pkgs.mkShell {
-          buildInputs = [
-            androidSdk
-            pkgs.gradle
-          ];
-
-          ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
-          # Override the aapt2 that gradle uses with the nix-shipped version
-          GRADLE_OPTS = pkgs.lib.strings.concatStringsSep " " extraGradleFlags;
-          UPDATE_LOCK = ''nix run github:tnichols217/gradle2nix/v2 -- -t :server:build -- $GRADLE_OPTS'';
+        gradle = pkgs.callPackage ./nix/shell.nix {
+          inherit pkgs androidSdk extraGradleFlags system overrideGradleFlags;
+          gradle2nix = inputs.gradle2nix.packages.${system}.gradle2nix;
         };
         default = gradle;
       };
+      apps = {
+        update-lock = pkgs.callPackage ./nix/update-lock.nix {
+          inherit pkgs androidSdk  extraGradleFlags system overrideGradleFlags;
+          inherit (inputs) flake-utils scrcpy;
+          gradle2nix = inputs.gradle2nix.packages.${system}.gradle2nix;
+        };
+      };
+      formatter = pkgs.alejandra;
     });
 }
 

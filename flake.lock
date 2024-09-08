@@ -19,12 +19,15 @@
       }
     },
     "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
       "locked": {
-        "lastModified": 1605370193,
-        "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "5021eac20303a61fafe17224c087f5519baed54d",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
         "type": "github"
       },
       "original": {
@@ -36,26 +39,40 @@
     "gradle2nix": {
       "inputs": {
         "flake-utils": "flake-utils_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1725751759,
-        "narHash": "sha256-DfnN9hWcrb5WbNZNJg2KtTEGd/SCoZFkFdCHMeglN/w=",
-        "owner": "tnichols217",
+        "lastModified": 1721151836,
+        "narHash": "sha256-v6O9fE2GBoo/i4qrc5co7KckIv5TTamRXrdltjal1Yw=",
+        "owner": "tadfisher",
         "repo": "gradle2nix",
-        "rev": "40ca409ca69d9f8b59ea623c43f936724212e8fc",
+        "rev": "b33693bc6b6ebd1c3633435d9d0833f665fb12d1",
         "type": "github"
       },
       "original": {
-        "owner": "tnichols217",
+        "owner": "tadfisher",
         "ref": "v2",
         "repo": "gradle2nix",
         "type": "github"
       }
     },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1720957393,
+        "narHash": "sha256-oedh2RwpjEa+TNxhg5Je9Ch6d3W1NKi7DbRO1ziHemA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "693bc46d169f5af9c992095736e82c3488bf7dbb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1725534445,
         "narHash": "sha256-Yd0FK9SkWy+ZPuNqUgmVPXokxDgMJoGuNpMEtkfcf84=",
@@ -75,10 +92,42 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "gradle2nix": "gradle2nix",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2",
+        "scrcpy": "scrcpy"
+      }
+    },
+    "scrcpy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1724935460,
+        "narHash": "sha256-/mSHcKnTqjizomxuxdCaT4hqbTjJpV9Y3AQ3i+cbZ2Y=",
+        "owner": "Genymobile",
+        "repo": "scrcpy",
+        "rev": "21e2e2606e683326d9171afb106a5473f16d8bb9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Genymobile",
+        "repo": "scrcpy",
+        "type": "github"
       }
     },
     "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_2": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
