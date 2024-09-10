@@ -34,7 +34,7 @@
       };
       extraGradleFlags = [ "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${buildToolsVersion}/aapt2" ];
       overrideGradleFlags = drv: drv.overrideAttrs (final: prev: (prev // {
-        final.gradleFlags = (pkgs.lib.lists.drop 1 prev.gradleFlags) ++ extraGradleFlags;
+        gradleFlags = (pkgs.lib.lists.drop 1 prev.gradleFlags) ++ extraGradleFlags;
       }));
       buildGradlePackage = args: overrideGradleFlags (inputs.gradle2nix.builders.${system}.buildGradlePackage args);
       androidSdk = androidPackages.androidsdk;
@@ -44,8 +44,6 @@
           inherit pkgs buildGradlePackage androidSdk;
           scrcpy = inputs.scrcpy;
         };
-        thing = inputs.gradle2nix.packages.${system}.gradle2nix;
-        thing2 = inputs.gradle2nix2.packages.${system}.gradle2nix;
         default = scrcpy;
       };
       devShells = rec {
